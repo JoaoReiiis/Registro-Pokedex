@@ -3,8 +3,7 @@
 
 using namespace std;
 
-struct pokemon
-{
+struct pokemon{
     int id;
     string nome;
     string tipo;
@@ -20,10 +19,7 @@ struct pokemon
     bool lendario;
 };
 
-bool compara(pokemon, pokemon, string, bool);
-
-string pokemonToString(pokemon &pokemon)
-{
+string pokemonToString(pokemon &pokemon){
     return "ID: " + to_string(pokemon.id) +
            ", Nome: " + pokemon.nome +
            ", Tipo: " + pokemon.tipo +
@@ -39,10 +35,7 @@ string pokemonToString(pokemon &pokemon)
            ", Lendário: " + (pokemon.lendario ? "Sim" : "Não");
 }
 
-void le_arquivo(pokemon *pokedex, int tamPokedex)
-{   
-    ifstream entrada("Pokemon.csv");
-    
+void le_arquivo(pokemon *pokedex, int &tamPokedex, ifstream &entrada){
     for (int i = 0; i < tamPokedex; i++)
     {
         entrada >> pokedex[i].id;
@@ -67,13 +60,12 @@ void le_arquivo(pokemon *pokedex, int tamPokedex)
         entrada >> pokedex[i].geracao;
         entrada.ignore();
         entrada >> pokedex[i].lendario;
-
-        // cout << pokemonToString(pokedex[i]) << endl;
     }
+
+    entrada.close();
 }
 
-void adiciona(pokemon *&pokedex, int &tamPokedex, int &tamMax, int margem)
-{
+void adiciona(pokemon *&pokedex, int &tamPokedex, int &tamMax, int margem){
     if (tamPokedex >= tamMax)
     {
         tamMax += margem;
@@ -135,30 +127,26 @@ void adiciona(pokemon *&pokedex, int &tamPokedex, int &tamMax, int margem)
     tamPokedex++;
 }
 
-void exclui(pokemon *&pokedex, int &tamPokedex, int &tamMax, int margem)
-{
+void exclui(pokemon *&pokedex, int &tamPokedex, int &tamMax, int margem){
     int idExcluir;
     cout << "Digite o ID do Pokémon a ser excluído: ";
     cin >> idExcluir;
 
     int indice = -1;
-    for (int i = 0; i < tamPokedex; i++)
-    {
-        if (pokedex[i].id == idExcluir)
-        {
+    for (int i = 0; i < tamPokedex; i++){
+        if (pokedex[i].id == idExcluir){
             indice = i;
-            break;
         }
     }
 
-    if (indice == -1)
-    {
+    cout << indice;
+
+    if (indice == -1){
         cout << "Pokémon com ID " << idExcluir << " não encontrado." << endl;
         return;
     }
 
-    for (int i = indice; i < tamPokedex - 1; i++)
-    {
+    for (int i = indice; i < tamPokedex - 1; i++){
         pokedex[i] = pokedex[i + 1];
     }
 
@@ -179,9 +167,7 @@ void exclui(pokemon *&pokedex, int &tamPokedex, int &tamMax, int margem)
         pokedex = novoPokedex;
     }*/
 }
-
-void salva_arquivo(pokemon *pokedex, int tamPokedex, string cabecalho)
-{
+void salva_arquivo(pokemon *pokedex, int tamPokedex, string cabecalho){
     ofstream saida("PokemonSaida.csv");
 
     saida << cabecalho << endl;
@@ -204,9 +190,7 @@ void salva_arquivo(pokemon *pokedex, int tamPokedex, string cabecalho)
     }
     saida.close();
 }
-
-bool compara(pokemon x, pokemon y, string campo, bool crescente)
-{
+bool compara(pokemon x, pokemon y, string campo, bool crescente){
     if (campo == "nome")
         return crescente ? x.nome < y.nome : x.nome > y.nome;
     else if (campo == "id")
@@ -228,9 +212,7 @@ bool compara(pokemon x, pokemon y, string campo, bool crescente)
 
     return false;
 }
-
-void quicksort(pokemon *pokedex, int inicio, int fim, string campo, bool crescente)
-{
+void quicksort(pokemon *pokedex, int inicio, int fim, string campo, bool crescente){
     if (inicio > fim)
         return;
 
@@ -252,29 +234,34 @@ void quicksort(pokemon *pokedex, int inicio, int fim, string campo, bool crescen
     quicksort(pokedex, inicio, pivoIndex - 1, campo, crescente);
     quicksort(pokedex, pivoIndex + 1, fim, campo, crescente);
 }
-
-pokemon *busca_binaria(pokemon *pokedex, int inicio, int fim, int k)
-{
+pokemon *busca_binaria(pokemon *pokedex, int inicio, int fim, string valor, bool porNome){
     if (inicio > fim)
-    {
         return nullptr;
-    }
+
     int meio = (inicio + fim) / 2;
-    if (k == pokedex[meio].id)
+
+    if (porNome)
     {
-        return &pokedex[meio];
-    }
-    else if (k < pokedex[meio].id)
-    {
-        return busca_binaria(pokedex, inicio, meio - 1, k);
+        if (pokedex[meio].nome == valor)
+            return &pokedex[meio];
+        else if (pokedex[meio].nome < valor)
+            return busca_binaria(pokedex, meio + 1, fim, valor, porNome);
+        else
+            return busca_binaria(pokedex, inicio, meio - 1, valor, porNome);
     }
     else
     {
-        return busca_binaria(pokedex, meio + 1, fim, k);
+        int id = stoi(valor);
+        if (pokedex[meio].id == id)
+            return &pokedex[meio];
+        else if (pokedex[meio].id < id)
+            return busca_binaria(pokedex, meio + 1, fim, valor, porNome);
+        else
+            return busca_binaria(pokedex, inicio, meio - 1, valor, porNome);
     }
 }
-void exibirAscii()
-{
+
+void exibirAscii(){
     cout << R"(
                      ⢠⣤⣶⣿⣷⣤⣀⣀⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣤⠀⠀⠸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
@@ -307,43 +294,22 @@ void exibirAscii()
 )" << endl;
 }
 
-void menu(){
-    int opcao;
-    while(opcao!=-1){
-        cin >> opcao;
-        switch (opcao)
-        {
-        case 1:
-            break;
-        case 2:
-            break;
-        case 3:
-            break;
-        case 4:
-            break;
-        case 5:
-            break;
-        case 6:
-            break;
-        case 7:
-            break;
-        case 8:
-            break;
-        case 9:
-            break;
-        case 10:
-            break;
-        case -1:
-            break;                                
-        default:
-            cout << "Opcao invalida!" << endl;
-            break;
-        }
-    }
+void exibir_menu(){
+    cout << "================= MENU POKEDEX =================" << endl;
+    cout << "1. Exibir Todos Pokemons" << endl;
+    cout << "2. Adicionar Pokemon" << endl;
+    cout << "3. Excluir Pokemon" << endl;
+    cout << "4. Buscar Pokemon" << endl;
+    cout << "5. Ordenar Pokemons" << endl;
+    cout << "6. Salvar em arquivo CSV" << endl;
+    cout << "7. Exibir de X a Y" << endl;
+    cout << "8. Limpar Tela" << endl;
+    cout << "0. Sair" << endl;
+    cout << "================================================" << endl;
+    cout << "Escolha uma opcao: ";
 }
 
-int main()
-{
+int main(){
     ifstream entrada("Pokemon.csv");
     string cabecalho;
     int tamPokedex;
@@ -353,15 +319,115 @@ int main()
 
     int margem = 5;
     int tamMax = tamPokedex + margem;
-    int opcao = 0;
     pokemon *pokedex = new pokemon[tamMax];
 
-    le_arquivo(pokedex, tamPokedex);
-    entrada.close();
+    le_arquivo(pokedex, tamPokedex, entrada);
 
+    int opcao = 0;
     exibirAscii();
+    do
+    {
+        exibir_menu();
+        cin >> opcao;
 
-    cout << endl;
+        switch (opcao)
+        {
+        case 1:
+        {
+            for (int i = 0; i < tamPokedex; i++)
+            {
+                cout << pokemonToString(pokedex[i]) << endl;
+            }
+            break;
+        }
+
+        case 2:
+        {
+            adiciona(pokedex, tamPokedex, tamMax, margem);
+            break;
+        }
+
+        case 3:
+        {
+            exclui(pokedex, tamPokedex, tamMax, margem);
+            break;
+        }
+        case 4:
+        {
+            cout << "Deseja buscar por (0) Nome ou (1) Id? ";
+            int opcaoBusca;
+            cin >> opcaoBusca;
+
+            if (opcaoBusca)
+            {
+                string id;
+                cout << "Digite o ID do Pokemon: ";
+                cin >> id;
+                quicksort(pokedex, 0, tamPokedex - 1, "id", 1);
+                pokemon *busca = busca_binaria(pokedex, 0, tamPokedex - 1, id, 0);
+                busca == nullptr ? cout << "Pokemon nao encontrado." << endl : cout << pokemonToString(*busca) << endl;
+            }
+            else
+            {
+                string nome;
+                cout << "Digite o Nome do Pokemon: ";
+                cin >> nome;
+                quicksort(pokedex, 0, tamPokedex - 1, "nome", 1);
+                pokemon *busca = busca_binaria(pokedex, 0, tamPokedex - 1, nome, 1);
+                busca == nullptr ? cout << "Pokemon nao encontrado." << endl : cout << pokemonToString(*busca) << endl;
+            }
+            break;
+        }
+
+        case 5:
+        {
+            string campo;
+            bool crescente;
+            cout << "Por qual campo deseja ordenar? (opções: nome, id, total, hp, ataque, defesa, spataque, spdefesa, speed): ";
+            cin >> campo;
+
+            cout << "Deseja ordenar de forma crescente? (1 para sim, 0 para não): ";
+            cin >> crescente;
+
+            quicksort(pokedex, 0, tamPokedex - 1, campo, crescente);
+
+            cout << "Pokémons ordenados com sucesso!" << endl;
+            break;
+        }
+
+        case 6:
+        {
+            salva_arquivo(pokedex, tamPokedex, cabecalho);
+            break;
+        }
+
+        case 7:
+            int comeco;
+            int fim;
+
+            cout << "Digite o elemento que voce deseja comecar: ";
+            cin >> comeco;
+            cout << "Agora digite o elemento que voce deseja terminar: ";
+            cin >> fim;
+
+            for (int i = comeco - 1; i < fim; i++)
+            {
+                cout << pokemonToString(pokedex[i]) << endl;
+            }
+            break;
+
+        case 8:
+            system("clear||cls");
+            exibirAscii();
+            break;
+        case 0:
+           cout << "Encerrando o programa. Até logo!" << endl;
+           break;
+        default:
+            cout << "Opcao invalida! Tente novamente." << endl;
+        }
+
+    } while (opcao != 0);
 
     delete[] pokedex;
     return 0;
