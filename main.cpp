@@ -60,7 +60,7 @@ void exibir_menu() {
   cout << "3. Excluir Pokemon" << endl;
   cout << "4. Buscar Pokemon" << endl;
   cout << "5. Ordenar Pokemons" << endl;
-  cout << "6. Salvar em arquivo CSV" << endl;
+  cout << "6. Salvar em arquivo" << endl;
   cout << "7. Exibir de X a Y" << endl;
   cout << "8. Limpar Tela" << endl;
   cout << "0. Sair" << endl;
@@ -68,7 +68,22 @@ void exibir_menu() {
   cout << "Escolha uma opcao: ";
 }
 
-void le_arquivo(pokemon *pokedex, int &tamPokedex, ifstream &entrada) {
+bool inicializar_pokedex(pokemon *&pokedex, int &tamPokedex, int &tamMax,
+                         int margem, string &cabecalho,
+                         const string &nomeArquivo) {
+
+  ifstream entrada(nomeArquivo);
+  if (!entrada.is_open()) {
+    cout << "Erro ao abrir o arquivo texto: " << nomeArquivo << endl;
+    return false;
+  }
+
+  getline(entrada, cabecalho);
+  entrada >> tamPokedex;
+
+  tamMax = tamPokedex + margem;
+  pokedex = new pokemon[tamMax];
+
   for (int i = 0; i < tamPokedex; i++) {
     entrada >> pokedex[i].id;
     entrada.ignore();
@@ -95,6 +110,67 @@ void le_arquivo(pokemon *pokedex, int &tamPokedex, ifstream &entrada) {
   }
 
   entrada.close();
+
+  cout << "Arquivo texto lido!" << endl;
+  return true;
+}
+
+bool inicializar_pokedex_binario(pokemon *&pokedex, int &tamPokedex,
+                                 int &tamMax, int margem,
+                                 const string &nomeArquivoBinario) {
+
+  ifstream entrada(nomeArquivoBinario, ios::binary);
+
+  if (!entrada) {
+    cout << "Sem arquivo binário." << endl;
+    return false;
+  }
+
+  entrada.seekg(0, ios::end);
+  size_t tamanhoArquivo = entrada.tellg();
+  entrada.seekg(0, ios::beg);
+
+  tamPokedex = tamanhoArquivo / sizeof(pokemon);
+  pokedex = new pokemon[tamPokedex];
+
+  entrada.read((char *)pokedex, tamanhoArquivo);
+  entrada.close();
+
+  cout << "Arquivo binário lido!" << endl;
+  return true;
+}
+
+void salva_arquivo(pokemon *pokedex, int tamPokedex, string cabecalho) {
+  cout << "Digite o nome do arquivo para salvar os dados em texto: ";
+  string nomeArquivo;
+  cin >> nomeArquivo;
+
+  ofstream saida(nomeArquivo);
+
+  saida << cabecalho << endl;
+  saida << tamPokedex << endl;
+  for (int i = 0; i < tamPokedex; i++) {
+    saida << pokedex[i].id << "," << pokedex[i].nome << "," << pokedex[i].tipo
+          << "," << (pokedex[i].tipo2[0] == '\0' ? "" : pokedex[i].tipo2) << ","
+          << pokedex[i].total << "," << pokedex[i].hp << ","
+          << pokedex[i].ataque << "," << pokedex[i].defesa << ","
+          << pokedex[i].spataque << "," << pokedex[i].spdefesa << ","
+          << pokedex[i].speed << "," << pokedex[i].geracao << ","
+          << pokedex[i].lendario << endl;
+  }
+
+  saida.close();
+}
+
+void salva_arquivo_binario(pokemon *pokedex, int tamPokedex) {
+  cout << "Digite o nome do arquivo para salvar os dados em binario: ";
+  string nomeArquivo;
+  cin >> nomeArquivo;
+
+  ofstream saida(nomeArquivo);
+
+  saida.write((const char *)pokedex, sizeof(pokemon) * tamPokedex);
+  saida.close();
 }
 
 void adiciona(pokemon *&pokedex, int &tamPokedex, int &tamMax, int margem) {
@@ -183,65 +259,16 @@ void exclui(pokemon *&pokedex, int &tamPokedex, int &tamMax, int margem) {
   tamPokedex--;
   cout << "Pokémon com ID " << idExcluir << " foi excluído." << endl;
 
-  /*if (tamPokedex < tamMax - margem)
-  {
-      tamMax -= margem;
-      pokemon *novoPokedex = new pokemon[tamMax];
+  if (tamPokedex < tamMax - margem) {
+    tamMax -= margem;
+    pokemon *novoPokedex = new pokemon[tamMax];
 
-      for (int i = 0; i < tamPokedex; i++)
-      {
-          novoPokedex[i] = pokedex[i];
-      }
-
-      delete[] pokedex;
-      pokedex = novoPokedex;
-  }*/
-}
-
-void salva_arquivo(pokemon *pokedex, int tamPokedex, string cabecalho) {
-  cout << "Digite o nome do arquivo para salvar os dados: ";
-  string nomeArquivo;
-  cin >> nomeArquivo;
-  
-  ofstream saida(nomeArquivo);
-
-  saida << cabecalho << endl;
-  saida << tamPokedex << endl;
-  for (int i = 0; i < tamPokedex; i++) {
-    saida << pokedex[i].id << "," << pokedex[i].nome << "," << pokedex[i].tipo
-          << "," << (pokedex[i].tipo2[0] == '\0' ? "" : pokedex[i].tipo2) << ","
-          << pokedex[i].total << "," << pokedex[i].hp << ","
-          << pokedex[i].ataque << "," << pokedex[i].defesa << ","
-          << pokedex[i].spataque << "," << pokedex[i].spdefesa << ","
-          << pokedex[i].speed << "," << pokedex[i].geracao << ","
-          << pokedex[i].lendario << endl;
-  }
-  saida.close();
-}
-
-pokemon *busca_binaria(pokemon *pokedex, int inicio, int fim, const char *nome,
-                       int id) {
-  if (inicio > fim)
-    return nullptr;
-
-  int meio = (inicio + fim) / 2;
-
-  if (nome == nullptr) {
-    if (pokedex[meio].id == id) {
-      return &pokedex[meio];
-    } else if (pokedex[meio].id < id) {
-      return busca_binaria(pokedex, meio + 1, fim, nome, id);
-    } else {
-      return busca_binaria(pokedex, inicio, meio - 1, nome, id);
+    for (int i = 0; i < tamPokedex; i++) {
+      novoPokedex[i] = pokedex[i];
     }
-  } else {
-    if (strcmp(pokedex[meio].nome, nome) == 0) {
-      return &pokedex[meio];
-    } else if (strcmp(pokedex[meio].nome, nome) < 0) {
-      return busca_binaria(pokedex, meio + 1, fim, nome, id);
-    } else {
-      return busca_binaria(pokedex, inicio, meio - 1, nome, id);
-    }
+
+    delete[] pokedex;
+    pokedex = novoPokedex;
   }
 }
 
@@ -288,7 +315,6 @@ void quicksort(pokemon *pokedex, int inicio, int fim, int campo,
   int pivoIndex = inicio;
   pokemon pivo = pokedex[fim];
 
-  pokemon aux;
   for (int i = inicio; i < fim; i++) {
     if (compara(pokedex[i], pivo, campo, crescente)) {
       swap(pokedex[i], pokedex[pivoIndex]);
@@ -300,6 +326,32 @@ void quicksort(pokemon *pokedex, int inicio, int fim, int campo,
 
   quicksort(pokedex, inicio, pivoIndex - 1, campo, crescente);
   quicksort(pokedex, pivoIndex + 1, fim, campo, crescente);
+}
+
+pokemon *busca_binaria(pokemon *pokedex, int inicio, int fim, const char *nome,
+                       int id) {
+  if (inicio > fim)
+    return nullptr;
+
+  int meio = (inicio + fim) / 2;
+
+  if (nome == nullptr) {
+    if (pokedex[meio].id == id) {
+      return &pokedex[meio];
+    } else if (pokedex[meio].id < id) {
+      return busca_binaria(pokedex, meio + 1, fim, nome, id);
+    } else {
+      return busca_binaria(pokedex, inicio, meio - 1, nome, id);
+    }
+  } else {
+    if (strcmp(pokedex[meio].nome, nome) == 0) {
+      return &pokedex[meio];
+    } else if (strcmp(pokedex[meio].nome, nome) < 0) {
+      return busca_binaria(pokedex, meio + 1, fim, nome, id);
+    } else {
+      return busca_binaria(pokedex, inicio, meio - 1, nome, id);
+    }
+  }
 }
 
 string pokemonToString(pokemon &pokemon) {
@@ -318,21 +370,22 @@ string pokemonToString(pokemon &pokemon) {
 }
 
 int main() {
-  ifstream entrada("Pokemon.csv");
   string cabecalho;
   int tamPokedex;
-
-  getline(entrada, cabecalho);
-  entrada >> tamPokedex;
-
   int margem = 5;
-  int tamMax = tamPokedex + margem;
-  pokemon *pokedex = new pokemon[tamMax];
+  int tamMax;
+  pokemon *pokedex = nullptr;
 
-  le_arquivo(pokedex, tamPokedex, entrada);
+  string nomeArquivoCSV = "Pokemon.csv";
+  string nomeArquivoBinario = "Pokemon.bin";
 
-  int opcao = 0;
+  if (!inicializar_pokedex_binario(pokedex, tamPokedex, tamMax, margem,
+                                   nomeArquivoBinario))
+    inicializar_pokedex(pokedex, tamPokedex, tamMax, margem, cabecalho,
+                        nomeArquivoCSV);
+
   exibirAscii();
+  int opcao = 0;
   do {
     exibir_menu();
     cin >> opcao;
@@ -354,6 +407,7 @@ int main() {
       exclui(pokedex, tamPokedex, tamMax, margem);
       break;
     }
+
     case 4: {
       cout << "Deseja buscar por (0) Nome ou (1) Id? ";
       int opcaoBusca;
@@ -400,10 +454,11 @@ int main() {
 
     case 6: {
       salva_arquivo(pokedex, tamPokedex, cabecalho);
+      salva_arquivo_binario(pokedex, tamPokedex);
       break;
     }
 
-    case 7:
+    case 7: {
       int comeco;
       int fim;
 
@@ -416,7 +471,8 @@ int main() {
         cout << pokemonToString(pokedex[i]) << endl;
       }
       break;
-
+    }
+    
     case 8:
       system("clear||cls");
       exibirAscii();
