@@ -140,9 +140,9 @@ void validar_nome(pokemon *pokedex, int tamPokedex, char *nome) {
 
   do {
     cout << "Nome (até 15 caracteres): ";
-    cin.getline(nome, 15);  
-    if (cin.fail() || tamanho_string(nome) == 0 || tamanho_string(nome) > 15) {
-      cout << "Entrada inválida. O nome deve ter entre 1 e " << 15 << " caracteres. "
+    cin.getline(nome, 16);  
+    if (cin.fail() || tamanho_string(nome) == 0 || tamanho_string(nome) > 16) {
+      cout << "Entrada inválida. O nome deve ter entre 1 e 15 caracteres. "
               "Tente novamente." << endl;
       limpar_buffer();
       valido = false;
