@@ -336,7 +336,6 @@ string; // Representação formatada dos dados do Pokémon
 ```
 
 ## Compilação e Execução
-#### Compilador: g++ (recomendado)
 ```bash
 g++ -o pokedex pokedex.cpp
 ./pokedex
