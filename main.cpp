@@ -209,16 +209,16 @@ bool inicializar_pokedex_binario(pokemon *&pokedex, int &id, int &tamPokedex,
                                  int &tamMax, int margem,
                                  const string &nomeArquivoBinario) {
 
-  ifstream entrada(nomeArquivoBinario, ios::binary);
+  ifstream entrada(nomeArquivoBinario);
 
   if (!entrada) {
     cout << "Erro ao abrir o arquivo binario: " << nomeArquivoBinario << endl;
     return false;
   }
 
-  entrada.seekg(0, ios::end);
+  entrada.seekg(0);
   size_t tamanhoArquivo = entrada.tellg();
-  entrada.seekg(0, ios::beg);
+  entrada.seekg(0);
 
   tamPokedex = tamanhoArquivo / sizeof(pokemon);
   id = tamPokedex;
@@ -287,8 +287,7 @@ void adicionar(pokemon *&pokedex, int &id, int &tamPokedex, int &tamMax,
   novoPokemon.spdefesa = validar_inteiro("SpDefesa (1-255): ", 1, 255);
   novoPokemon.speed = validar_inteiro("Speed (1-255): ", 1, 255);
   novoPokemon.geracao = validar_inteiro("Geração (1-8): ", 1, 8);
-  novoPokemon.lendario =
-      validar_inteiro("Lendário? (1 para sim, 0 para não): ", 0, 1);
+  novoPokemon.lendario = validar_inteiro("Lendário? (1 para sim, 0 para não): ", 0, 1);
 
   novoPokemon.total = novoPokemon.hp + novoPokemon.ataque + novoPokemon.defesa +
                       novoPokemon.spataque + novoPokemon.spdefesa +
