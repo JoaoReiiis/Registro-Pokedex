@@ -1,11 +1,9 @@
 # Pokedex Pokemon - Documentação Completa
 ## Visão Geral
 Este projeto implementa uma Pokédex em C++, com suporte para:
-- Visualização, adição, exclusão e busca de Pokémons.
-- Carregamento de dados a partir de arquivos CSV ou binários.
+- Visualização, adição, edição, exclusão e busca de Pokémons.
+- Carregamento e armazenamento de dados a partir de arquivos CSV ou binários.
 - Ordenação de dados em diferentes campos.
-- Salvamento dos dados em arquivos CSV ou binários.
-- Interface simples com menu e exibição ASCII.
 
 ## Estrutura de Dados
 A estrutura `pokemon` armazena as seguintes informações:
@@ -30,7 +28,7 @@ struct pokemon {
 
 ## Funções Implementadas
 
-### Manipulação de Pokédex
+### Manipulação da Pokédex
 
 #### 1. 
 ```cpp
@@ -217,31 +215,6 @@ bool crescente;  // Ordenação crescente ou decrescente
 true;  // Se a condição de ordenação é satisfeita
 false; // Caso contrário
 ```
-
-### 11.
-```cpp
-void validar_tipos(char *destino)
-```
-Valida os tipos inseridos pelo usuário, que podem ser até dois tipos separados por espaço. Verifica se os tipos pertencem a uma lista de tipos válidos de Pokémon.
-
-##### **Parâmetros:**
-```cpp
-char *destino; // Ponteiro para armazenar os tipos validados
-```
-
-### 12.
-```cpp
-void validar_nome(pokemon *pokedex, int tamPokedex, char *nome, int tamanho)
-```
-Valida o nome de um Pokémon inserido pelo usuário. O nome não pode ultrapassar 15 caracteres e não pode ser duplicado.
-
-##### **Parâmetros:**
-```cpp
-pokemon *pokedex; // Ponteiro para a Pokédex
-int tamPokedex;   // Tamanho atual da Pokédex
-char *nome;       // Ponteiro para armazenar o nome validado
-int tamanho;      // Tamanho máximo permitido para o nome
-```
 ---
 
 ### Utilidades
@@ -303,25 +276,33 @@ int min, max;         // Limites inferior e superior
 int; // Valor inteiro validado
 ```
 
-#### 5. 
-```cpp
-bool validar_tipo(const char *tipo)
-```
 
-Valida se o tipo de Pokémon inserido é válido.
+### 5.
+```cpp
+void validar_tipos(char *destino)
+```
+Valida os tipos inseridos pelo usuário, que podem ser até dois tipos separados por espaço. Verifica se os tipos pertencem a uma lista de tipos válidos de Pokémon.
 
 ##### **Parâmetros:**
 ```cpp
-const char *tipo; // Tipo de Pokémon a ser validado
+char *destino; // Ponteiro para armazenar os tipos validados
 ```
 
-##### **Retorno:**
+### 6.
 ```cpp
-true;  // Se o tipo é válido
-false; // Se o tipo é inválido
+void validar_nome(pokemon *pokedex, int tamPokedex, char *nome, int tamanho)
+```
+Valida o nome de um Pokémon inserido pelo usuário. O nome não pode ultrapassar 15 caracteres e não pode ser duplicado.
+
+##### **Parâmetros:**
+```cpp
+pokemon *pokedex; // Ponteiro para a Pokédex
+int tamPokedex;   // Tamanho atual da Pokédex
+char *nome;       // Ponteiro para armazenar o nome validado
+int tamanho;      // Tamanho máximo permitido para o nome
 ```
 
-#### 6. 
+#### 7. 
 ```cpp
 string pokemon_to_string(pokemon &pokemon)
 ```
@@ -343,18 +324,19 @@ string; // Representação formatada dos dados do Pokémon
 1. Exibir Todos Pokemons
 2. Adicionar Pokemon
 3. Excluir Pokemon
-4. Buscar Pokemon
-5. Ordenar Pokemons
-6. Salvar em arquivo
-7. Exibir de X a Y
-8. Carregar arquivo
-9. Limpar Tela
+4. Editar Pokemon
+5. Buscar Pokemon
+6. Ordenar Pokemons
+7. Salvar em arquivo
+8. Exibir de X a Y
+9. Carregar arquivo
+10. Limpar Tela
 0. Sair
 ================================================
 ```
 
 ## Compilação e Execução
-    **Compilador:** g++ (recomendado)
+#### Compilador: g++ (recomendado)
 ```bash
 g++ -o pokedex pokedex.cpp
 ./pokedex
